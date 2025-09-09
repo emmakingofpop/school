@@ -1,9 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { SchoolService, School } from '../services/schoolService';
 
-export default function SchoolForm() {
+type Props = {
+  setLink : Dispatch<SetStateAction<number>>;
+
+}
+
+export default function SchoolForm({setLink}:Props) {
+  
   const [formData, setFormData] = useState<Partial<School>>({
     name: '',
     address: '',
@@ -11,23 +17,24 @@ export default function SchoolForm() {
     email: '',
     principal: '',
     url_logo: '',
-    academicYear: ['2025-2026']
+    academicYear: ['2025-2026'],
+    id_admin: ''
   });
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  const getAcademicYear = (startYear = new Date().getFullYear()) => {
+  return [`${startYear}-${startYear + 1}`];
+}
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const id_admin = localStorage.getItem('masomo_admin') || ''
+    setFormData((prev) => ({ ...prev,id_admin:id_admin, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setLogoFile(e.target.files[0]);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +45,7 @@ export default function SchoolForm() {
       // Add school
       const id = await SchoolService.add(formData as School);
 
-
+      setLink(2)
       setMessage('✅ School added successfully!');
       // Reset form
       setFormData({
@@ -47,8 +54,7 @@ export default function SchoolForm() {
         phone: '',
         email: '',
         principal: '',
-        url_logo: '',
-        academicYear: ['2025-2026']
+        url_logo: ''
       });
       setLogoFile(null);
     } catch (error) {
@@ -60,7 +66,7 @@ export default function SchoolForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20 text-white space-y-4 shadow-lg">
+    <form onSubmit={handleSubmit} className="max-w-md max-sm:h-[70dvh] overflow-y-scroll mx-auto bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20 text-white space-y-4 shadow-lg">
       <h2 className="text-2xl font-bold mb-4 text-center text-[#FF7E29]">Add New School</h2>
 
       <input
@@ -103,11 +109,22 @@ export default function SchoolForm() {
         className="w-full p-2 rounded-lg bg-black border border-gray-500 placeholder-gray-400 focus:ring focus:ring-[#FF7E29]"
       />
 
+      
       <input
         type="text"
         name="principal"
         placeholder="Principal Name"
         value={formData.principal}
+        onChange={handleChange}
+        required
+        className="w-full p-2 rounded-lg bg-black border border-gray-500 placeholder-gray-400 focus:ring focus:ring-[#FF7E29]"
+      />
+
+      <input
+        type="text"
+        name="academicYear"
+        placeholder="Academic Year"
+        value={formData.academicYear}
         onChange={handleChange}
         required
         className="w-full p-2 rounded-lg bg-black border border-gray-500 placeholder-gray-400 focus:ring focus:ring-[#FF7E29]"

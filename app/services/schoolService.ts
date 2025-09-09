@@ -6,7 +6,9 @@ import {
   deleteDoc,
   getDoc,
   getDocs,
-  doc
+  doc,
+  query,
+  where
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -18,6 +20,7 @@ export type School = {
   principal: string;
   url_logo: string;
   academicYear: string[];
+  id_admin: string
 };
 
 const COLLECTION_NAME = 'schools';
@@ -25,10 +28,24 @@ const COLLECTION_NAME = 'schools';
 export const SchoolService = {
   add: async (data: School): Promise<string | null> => {
     try {
+      // Vérifier si une école avec le même nom existe déjà
+      const q = query(
+        collection(db, COLLECTION_NAME),
+        where("name", "==", data.name)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        
+        return null; // ou querySnapshot.docs[0].id si tu veux renvoyer l’ID existant
+      }
+
+      // Ajouter si pas de duplication
       const docRef = await addDoc(collection(db, COLLECTION_NAME), data);
       return docRef.id;
     } catch (error) {
-      console.error('Error adding school:', error);
+      console.error("Error adding school:", error);
       return null;
     }
   },
@@ -48,13 +65,14 @@ export const SchoolService = {
     }
   },
 
-  getAll: async (): Promise<School[]> => {
+  getAll: async (): Promise<(School & {id:string})[]> => {
     try {
       const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
-      const schools: School[] = [];
+      const schools: (School & {id:string})[] = [];
       querySnapshot.forEach((doc) => {
-        schools.push(doc.data() as School);
+        schools.push({...doc.data() as School,id: doc.id});
       });
+      console.log(schools)
       return schools;
     } catch (error) {
       console.error('Error getting schools:', error);
@@ -64,13 +82,21 @@ export const SchoolService = {
 
   // In SchoolService
 
-getAllDocs: async (): Promise<(School & { id: string })[]> => {
+
+getAllDocs: async (id_admin: string): Promise<(School & { id: string })[]> => {
   try {
-    const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where('id_admin', '==', id_admin)
+    );
+
+    const querySnapshot = await getDocs(q);
     const schools: (School & { id: string })[] = [];
+
     querySnapshot.forEach((docSnap) => {
       schools.push({ ...(docSnap.data() as School), id: docSnap.id });
     });
+
     return schools;
   } catch (error) {
     console.error('Error getting schools:', error);

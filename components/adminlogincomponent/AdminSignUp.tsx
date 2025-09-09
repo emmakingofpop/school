@@ -117,7 +117,7 @@ const findUserByEmailAndPassword = async(email:string, password:string)=> {
 
   // 4️⃣ If all is valid, add user
   await addDoc(peopleRef, formData);
-  setloadingImage(false)
+
   redirectUrl()
   //alert('✅ User successfully registered.');
 };
@@ -133,7 +133,6 @@ const findUserByEmailAndPassword = async(email:string, password:string)=> {
     }
 
     redirectUrl()
-    setloadingImage(false)
     setisLogin(true)
 
   }
@@ -163,11 +162,6 @@ const findUserByEmailAndPassword = async(email:string, password:string)=> {
       setConfirmPassword('');
   }
 
-
-  const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, 'administrators', id));
-    fetchPeople();
-  };
 
   useEffect(() => {
     fetchPeople();
@@ -213,7 +207,7 @@ const findUserByEmailAndPassword = async(email:string, password:string)=> {
 
       </form>}
 
-      { !isLogin && <form onSubmit={handleSubmit} className="glass-card space-y-4">
+      { !isLogin && <form onSubmit={handleSubmit} className="overflow-scroll h-[50dvh] glass-card space-y-4">
         <div>
           <input
             className={"w-full p-3 rounded text-white "+styles.input}

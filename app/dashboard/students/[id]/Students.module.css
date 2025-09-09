@@ -1,0 +1,10 @@
+.hide{
+    transform: translateX(-150%);
+    transition: transform .5s ease-in-out  ;
+}
+
+.show{
+    padding: 4px;
+    transform: translateX(0);
+    transition: transform .5s ease-in-out  ;
+}

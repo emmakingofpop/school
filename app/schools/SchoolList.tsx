@@ -10,33 +10,32 @@ export default function SchoolList() {
   const [schools, setSchools] = useState<SchoolWithId[]>([]);
   const [selectedSchoolId, setSelectedSchoolId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadSchools = async () => {
-      const snapshot = await SchoolService.getAll();
-      const schoolsWithId = (await SchoolService.getAllDocs()) as SchoolWithId[];
-      setSchools(schoolsWithId);
-    };
+  const loadSchools = async () => {
+    const id_admin = localStorage.getItem('masomo_admin') || ''
+    const schoolsWithId = (await SchoolService.getAllDocs(id_admin)) as SchoolWithId[];
+    setSchools(schoolsWithId);
+  };
 
+  useEffect(() => {
     loadSchools();
-  }, []);
+  }, [selectedSchoolId]);
 
   if (selectedSchoolId) {
     return (
       <div className=" p-2 flex items-center justify-center">
-        <p onClick={()=>setSelectedSchoolId(null)}>Return</p>
         <SchoolEdit schoolId={selectedSchoolId} setSelectedSchoolId={setSelectedSchoolId}  />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen  text-white p-8">
+    <div className=" text-white p-8">
       <h1 className="text-3xl font-bold text-[#FF7E29] mb-6">All Schools</h1>
 
       {schools.length === 0 && <p>No schools found.</p>}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {schools.map((school) => (
+      <div className="overflow-scroll h-[55dvh] grid grid-cols-1 md:grid-cols-2 gap-6">
+        {schools.reverse().map((school) => (
           <div key={school.id} className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 shadow-lg space-y-2">
             <h2 className="text-xl font-bold text-[#FF7E29]">{school.name}</h2>
             <p className="text-gray-300">{school.address}</p>

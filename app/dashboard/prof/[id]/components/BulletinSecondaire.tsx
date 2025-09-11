@@ -58,9 +58,9 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
         const cote = note.find(cot => cot.periode === periode && cot.courId === courId)?.cote
         if (cote) {
             return cote >= (ponderation/2) ? (
-                <td className="border border-gray-400 px-4 py-2">{cote}</td>
+                <td key={Math.random()} className="border border-gray-400 px-4 py-2">{cote}</td>
             ):(
-                <td className="border border-gray-400 px-4 py-2 text-red-700">{cote}</td>
+                <td key={Math.random()} className="border border-gray-400 px-4 py-2 text-red-700">{cote}</td>
             )
         }
         
@@ -75,9 +75,9 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
         if (premierPeriode && deuxiemePeriode && examenPremierSemestre) {
             const cote = premierPeriode + deuxiemePeriode + examenPremierSemestre
             return cote >= ((ponderation * 4)/2) ? (
-                <td className="border border-gray-400 px-4 py-2">{cote}</td>
+                <td key={Math.random()} className="border border-gray-400 px-4 py-2">{cote}</td>
             ):(
-                <td className="border border-gray-400 px-4 py-2 text-red-700">{cote}</td>
+                <td key={Math.random()} className="border border-gray-400 px-4 py-2 text-red-700">{cote}</td>
             )
         }
     }
@@ -90,9 +90,9 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
         if (troisiemePeriode && quatriemePeriode && examenDeuxiemeSemestre) {
             const cote = troisiemePeriode + quatriemePeriode + examenDeuxiemeSemestre
             return cote >= ((ponderation * 4)/2) ? (
-                <td className="border border-gray-400 px-4 py-2">{cote}</td>
+                <td key={Math.random()} className="border border-gray-400 px-4 py-2">{cote}</td>
             ):(
-                <td className="border border-gray-400 px-4 py-2 text-red-700">{cote}</td>
+                <td key={Math.random()} className="border border-gray-400 px-4 py-2 text-red-700">{cote}</td>
             )
         }
     }
@@ -110,9 +110,9 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
         if (premierPeriode && deuxiemePeriode && examenPremierSemestre && troisiemePeriode && quatriemePeriode && examenDeuxiemeSemestre) {
             const cote = premierPeriode + deuxiemePeriode + examenPremierSemestre + troisiemePeriode + quatriemePeriode + examenDeuxiemeSemestre
             return cote >= ((ponderation * 8)/2) ? (
-                <td className="border border-gray-400 px-4 py-2">{cote}</td>
+                <td key={Math.random()} className="border border-gray-400 px-4 py-2">{cote}</td>
             ):(
-                <td className="border border-gray-400 px-4 py-2 text-red-700">{cote}</td>
+                <td key={Math.random()} className="border border-gray-400 px-4 py-2 text-red-700">{cote}</td>
             )
         }
 
@@ -175,7 +175,7 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
 
     const maximaGeneraux = () => {
         if(!cours) return 0 
-        return cours.map((c)=>c.ponderation).reduce((sum, ponderation) => sum + (ponderation || 0), 0);
+        return cours.map((c)=> c.isWithExam ? c.ponderation : 0).reduce((sum, ponderation) => sum + (ponderation || 0), 0);
     }
     
 
@@ -214,16 +214,17 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
 <button onClick={handlePrint} className="bg-blue-500 text-white px-4 py-2 rounded">
     Print : {student?.matricule} {student?.nomComplet} {classe?.niveau}  {classe?.nom}
 </button>
-  <table ref={divRef} className="table-fixed border border-gray-400 text-black">
+  <table ref={divRef} className="table-fixed w-[90vw] border border-gray-400 text-black">
   <thead className="bg-gray-200">
     <tr>
-      <th colSpan={12} className="border border-gray-400 px-4 py-2 w-full">
+      <th colSpan={12} className="border border-gray-400 px-4 py-2 ">
         <div className="flex justify-between w-full">
           <img src="/drapeaux.png" className="w-20 h-15" />
-          <div>
-            <h1>Republique Democratique du congo</h1>
-            <h2>MINISTERE DE L'ENSEIGNEMENT PRIMAIRE, SECONDAIRE ET TECNIQUE</h2>
+          <div className="text-center">
+            <h1>République Démocratique du Congo</h1>
+            <h2>MINISTÈRE DE L’ENSEIGNEMENT PRIMAIRE, SECONDAIRE ET TECHNIQUE</h2>
           </div>
+
           <img src="/jpt.png" className="w-20 h-15" />
         </div>
       </th>
@@ -376,7 +377,7 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
         )}
 
         <tr key={c.id} className="bg-gray-50 ">
-            <td className="border border-gray-400 px-4 py-2 ">{c.Nomcour}</td>
+            <td className="border border-gray-400 px-4 py-2 break-words">{c.Nomcour}</td>
             {Cotes(c.id,c.ponderation,'Période 1')}
             {Cotes(c.id,c.ponderation,'Période 2')}
             {Cotes(c.id,c.ponderation,'Examen 1')}
@@ -397,7 +398,7 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
     
     
     <tr className="bg-gray-50 font-bold">
-      <td className="border border-gray-400 px-4 py-2">MAXIMA GENERAUX</td>
+      <td className="border border-gray-400 px-4 py-2 break-words">MAXIMA GENERAUX</td>
       <td className="border border-gray-400 px-4 py-2 text-red-600">{maximaGeneraux()}</td>
       <td className="border border-gray-400 px-4 py-2 text-red-600">{maximaGeneraux()}</td>
       <td className="border border-gray-400 px-4 py-2 text-red-600">{maximaGeneraux()*2}</td>
@@ -430,7 +431,7 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
       <td className="border border-gray-400 px-4 py-2">{totauxGeneralDeDeuxSemestres()}</td>
     </tr>
     <tr className="bg-gray-50 font-bold">
-      <td className="border border-gray-400 px-4 py-2">POURCENTAGE</td>
+      <td className="border border-gray-400 px-4 py-2 break-words">POURCENTAGE</td>
       <td className="border border-gray-400 px-4 py-2">
         {((totaux('Période 1') / maximaGeneraux()) * 100).toFixed(2)}%
         </td>
@@ -461,7 +462,7 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
 
     </tr>
     <tr className="bg-gray-50 font-bold">
-      <td className="border border-gray-400 px-4 py-2">PLACE / NBRE D'ELEVES</td>
+      <td className="border border-gray-400 px-4 py-2 break-words">PLACE / NBRE D'ELEVES</td>
       <td className="border border-gray-400 px-4 py-2">0</td>
       <td className="border border-gray-400 px-4 py-2">0</td>
       <td className="border border-gray-400 px-4 py-2">0</td>
@@ -473,7 +474,7 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
       <td className="border border-gray-400 px-4 py-2">0</td>
     </tr>
     <tr className="bg-gray-50 font-bold">
-      <td className="border border-gray-400 px-4 py-2">APPLICATION</td>
+      <td className="border border-gray-400 px-4 py-2 break-words">APPLICATION</td>
       <td className="border border-gray-400 px-4 py-2">TB</td>
       <td className="border border-gray-400 px-4 py-2">TB</td>
       <td colSpan={2} className="border border-gray-400 px-4 py-2 bg-black">0</td>
@@ -483,7 +484,7 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
 
     </tr>
     <tr className="bg-gray-50 font-bold">
-      <td className="border border-gray-400 px-4 py-2">CONDUITE</td>
+      <td className="border border-gray-400 px-4 py-2 break-words">CONDUITE</td>
       <td className="border border-gray-400 px-4 py-2">B</td>
       <td className="border border-gray-400 px-4 py-2">B</td>
       <td colSpan={2} className="border border-gray-400 px-4 py-2 bg-black">0</td>
@@ -492,7 +493,7 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
       <td colSpan={3} className="border border-gray-400 px-4 py-2 bg-black"></td>
     </tr>
     <tr className="bg-gray-50 font-bold">
-      <td className="border border-gray-400 px-4 py-2">SIGN. DU RESPONSABLE</td>
+      <td className="border border-gray-400 px-4 py-2 break-words">SIGN. DU RESPONSABLE</td>
       <td className="border border-gray-400 px-4 py-2"></td>
       <td className="border border-gray-400 px-4 py-2"></td>
       <td className="border border-gray-400 px-4 py-2"></td>
@@ -503,40 +504,45 @@ function BulletinSecondaire({ idStudent,classeId, anneeScolaireId, ecoleId }: Pr
       <td className="border border-gray-400 px-4 py-2"></td>
       <td className="border border-gray-400 px-4 py-2"></td>
     </tr>
-    
     <tr className="bg-gray-50 font-bold">
-        <td colSpan={12} className="border border-gray-400 px-4 py-2">
-            <p className='p-4'>
-                l'eleve ne pourra passer dans la classe superieure s'il n'a subi avec succes un examen de repechage en
-                <span>..................................................................................................</span>
-                <span>..................................................................................................</span>
-                <span>..................................................................................................</span>
-                <span>..................................................................................................</span>
-                <span>..................................................................................................</span>
-                <span>..................................................................................................</span>
-            </p>
-            <p className='p-4'>
-                - L'eleve passe dans la classe superieure (1)
-            </p>
-            <div className='flex justify-between p-4 '>
-                <p>- L'eleve double la classe (1)</p>
-                <p>Fait a .................................. , le ........../........./20</p>
-            </div>
-            <div className='flex justify-between p-4 '>
-                <div>
-                    <p className='font-bold'>Signature de l'eleve</p>
-                    <p>(1) Biffer la mention inutile.</p>
-                    <p>Note importante L Le bulletin est sans valeur s'il est rature ou sercharge.</p>
-                </div>
-                <p className='font-bold'>Sceau de l'ecole</p>
-                <div>
-                    <p className='py-20'>Le Chef d'Etablissement,</p>
-                    <p>Nom Signature</p>
-                </div>
-            </div>
-            <p className='text-center py-10'>Interdiction formelle de reproduire ce bulletin sous peine des sanctions prevues par la loi</p>
-        </td>
-    </tr>
+  <td colSpan={12} className="border border-gray-400 px-4 py-2 break-words">
+    <p className="p-4">
+      L’élève ne pourra être admis(e) en classe supérieure qu’à la condition d’avoir
+      subi avec succès un examen de repêchage en :
+      <span> .................................................................................................. </span>
+      <span> .................................................................................................. </span>
+      <span> .................................................................................................. </span>
+      <span> .................................................................................................. </span>
+      <span> .................................................................................................. </span>
+      <span> .................................................................................................. </span>
+    </p>
+    <p className="p-4">
+      – L’élève est admis(e) en classe supérieure (1)
+    </p>
+    <div className="flex justify-between p-4">
+      <p>– L’élève redouble la classe (1)</p>
+      <p>Fait à .................................. , le ........../........./20....</p>
+    </div>
+    <div className="flex justify-between p-4">
+      <div>
+        <p className="font-bold">Signature de l’élève</p>
+        <p>(1) Biffer la mention inutile.</p>
+        <p>
+          Note importante : Ce bulletin est nul s’il comporte des ratures ou des surcharges.
+        </p>
+      </div>
+      <p className="font-bold">Sceau de l’école</p>
+      <div>
+        <p className="py-20">Le Chef d’établissement,</p>
+        <p>Nom et Signature</p>
+      </div>
+    </div>
+    <p className="text-center py-10">
+      Interdiction formelle de reproduire ce bulletin sous peine de sanctions prévues par la loi.
+    </p>
+  </td>
+</tr>
+
   </tbody>
 </table>
 

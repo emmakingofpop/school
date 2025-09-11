@@ -1,0 +1,27 @@
+/* globals.css */
+
+@media print {
+  @page {
+    size: A4;       /* or 'A4 landscape' */
+    margin: 10mm;   /* adjust as needed */
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  table {
+    width: 100%;
+    font-size: 10px;  /* reduce font size for print */
+    page-break-inside: avoid;
+  }
+
+  th, td {
+    padding: 4px;     /* reduce cell padding */
+  }
+
+  .no-print {
+    display: none;    /* hide elements like buttons */
+  }
+}

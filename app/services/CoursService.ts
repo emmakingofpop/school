@@ -11,10 +11,12 @@ import {
   doc,
   query,
   where,
+  orderBy,
 } from 'firebase/firestore';
 
 export type Cours = {
   profId: string;
+  classId:string[]
   Nomcour: string;
   ponderation: number;
   isWithExam: boolean;
@@ -81,6 +83,31 @@ export const CoursService = {
         return [];
       }
     },   
+    getCourByClassefId: async (classId: string): Promise<(Cours & { id: string })[]> => {
+      try {
+        const q = query(
+          collection(db, COLLECTION_NAME),
+          where("classId", "array-contains", classId), // ✅ filter by class
+          orderBy("ponderation", "asc")                // ✅ sort ascending
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const cours: (Cours & { id: string })[] = [];
+          querySnapshot.forEach((docSnap) => {
+            cours.push({ ...(docSnap.data() as Cours), id: docSnap.id });
+          });
+          return cours;
+        }
+
+        return [];
+      } catch (error) {
+        console.error("Erreur lors de la récupération :", error);
+        return [];
+      }
+    },
+
 
   // 📋 Récupérer tous les cours
   getAll: async (): Promise<(Cours & { id: string })[]> => {

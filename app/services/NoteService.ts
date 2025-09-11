@@ -146,4 +146,26 @@ export const NoteService = {
   }
 },
 
+async getNoteByStudentInClass(
+  studentId: string,
+  classeId: string,
+  anneeScolaireId: string
+): Promise<(Note & { id: string })[]> {
+  try {
+    const q = query(
+      collection(db, NOTES_COLLECTION),
+      where("studentId", "==", studentId),
+      where("classeId", "==", classeId),
+      where("anneeScolaireId", "==", anneeScolaireId)
+     
+    );
+
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Note) }));
+  } catch (err) {
+    console.error("Erreur get note by student:", err);
+    return [];
+  }
+},
+
 };

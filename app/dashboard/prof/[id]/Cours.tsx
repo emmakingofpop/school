@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Cours, CoursService } from '../../../services/CoursService';
 import {getProfById} from '../../../services/profService';
 import CoursForm from './components/CoursForm';
+import { Classe,ClasseService } from '@/app/services/ClasseService';
 
 interface Props {
   profId: string;
@@ -13,6 +14,7 @@ interface Props {
 type CoursWithId = Cours & { id: string };
 
 const CoursPage = ({profId,adminId}:Props) => {
+  const [allClasses, setAllClasses] = useState<(Classe & { id: string })[]>([]);
   const [cours, setCours] = useState<CoursWithId[]>([]);
   const [prof, setProf] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,6 +23,7 @@ const CoursPage = ({profId,adminId}:Props) => {
 
   useEffect(() => {
     loadCours();
+    loadClasses();
   }, []);
 
   const loadCours = async () => {
@@ -31,6 +34,12 @@ const CoursPage = ({profId,adminId}:Props) => {
     setCours(all);
     setLoading(false);
   };
+
+    const loadClasses = async () => {
+      const data = await ClasseService.getAllByAdmin(adminId);
+      setAllClasses(data);
+    };
+  
 
   const handleSubmit = async (data: Cours) => {
     if (editingCours) {
@@ -85,7 +94,15 @@ const CoursPage = ({profId,adminId}:Props) => {
                 {cours.map((c) => (
                   <tr key={c.id} className="border-t">
                     <td className="p-2">{prof?.teacher?.fullName || ''}</td>
-                    <td className="p-2">{c.Nomcour}</td>
+                    <td className="p-2">{c.Nomcour}
+
+                      {c.classId && <ul className="list-disc ml-5">
+                        {c.classId.map(cid => {
+                          const classe = allClasses.find(c => c.id === cid);
+                          return classe ? <li key={cid}>{classe.niveau+' '+classe.nom}</li> : null;
+                        })}
+                      </ul>}
+                    </td>
                     <td className="p-2">{c.ponderation}</td>
                     <td className="p-2">{c.isWithExam ? '✔' : '✘'}</td>
                     <td className="p-2 space-x-2">
@@ -132,6 +149,12 @@ const CoursPage = ({profId,adminId}:Props) => {
                   <span className="font-medium">Examen: </span>
                   {c.isWithExam ? '✔ Oui' : '✘ Non'}
                 </p>
+                {c.classId && <ul className="list-disc ml-5">
+                  {c.classId.map(cid => {
+                    const classe = allClasses.find(c => c.id === cid);
+                    return classe ? <li key={cid}>{classe.niveau+' '+classe.nom}</li> : null;
+                  })}
+                </ul>}
                 <div className="flex justify-end space-x-4 mt-3">
                   <button
                     onClick={() => {

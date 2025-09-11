@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Cours } from '../../../../services/CoursService';
+import { Classe,ClasseService } from '@/app/services/ClasseService';
 
 type CoursFormProps = {
   cours: (Cours & { id: string }) | null;
@@ -10,9 +11,13 @@ type CoursFormProps = {
   adminId: string;
 };
 
+type ClasseWithId = (Classe & { id: string })
+
 const CoursForm = ({ cours, onSubmit, onCancel,profId,adminId }: CoursFormProps) => {
+  const [allClasses,setAllClasses] = useState<ClasseWithId[]>([])
   const [formData, setFormData] = useState<Cours>({
     profId: '',
+    classId : [],
     Nomcour: '',
     ponderation: 0,
     isWithExam: false,
@@ -22,6 +27,15 @@ const CoursForm = ({ cours, onSubmit, onCancel,profId,adminId }: CoursFormProps)
     setFormData(prev => ({ ...prev, profId: profId }));
     if (cours) setFormData(cours);
   }, [cours]);
+
+  useEffect(() => {
+    LoadClasses(adminId)
+  }, [adminId]);
+
+  const LoadClasses = async (id_admin: string) => {
+    const data : ClasseWithId[] = await ClasseService.getAllByAdmin(id_admin)
+    setAllClasses(data)
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -35,8 +49,15 @@ const CoursForm = ({ cours, onSubmit, onCancel,profId,adminId }: CoursFormProps)
     }
   };
 
+    const handleChangeOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = Array.from(e.target.selectedOptions, option => option.value);
+    setFormData(prev => ({ ...prev, classId: selected }));
+  };
+
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.classId.length === 0) return alert('Au moins une classe doit être sélectionnée.');
     onSubmit({
       ...formData,
       ponderation: +formData.ponderation,
@@ -59,6 +80,21 @@ const CoursForm = ({ cours, onSubmit, onCancel,profId,adminId }: CoursFormProps)
               className="w-full border p-2 rounded"
             />
           </div>
+          
+          <div>
+            <label className="block text-sm mb-1">Classes *</label>
+            <select
+              multiple
+              value={formData.classId}
+              onChange={handleChangeOptions}
+              className="w-full border p-2 rounded h-40"
+            >
+              {allClasses.map(cls => (
+                <option key={cls.id} value={cls.id}>{cls.niveau +' '+ cls.nom}</option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium">Nom du cours *</label>
             <input

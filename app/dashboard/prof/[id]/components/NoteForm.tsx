@@ -102,7 +102,7 @@ const NoteForm = ({ note, onSubmit, onCancel, isDuplicate,profId,adminId }: Note
     if (!formData.classeId) newErrors.classeId = 'Classe obligatoire';
     if (!formData.anneeScolaireId) newErrors.anneeScolaireId = 'Année obligatoire';
     if (!formData.courId) newErrors.courId = 'Cours obligatoire';
-    if (formData.cote < 0 || formData.cote > 20) newErrors.cote = 'Cote 0–20';
+    if (formData.cote < 0 ) newErrors.cote = 'Cote 0–20';
     if (!formData.periode) newErrors.ponderation = 'Pondération > 0';
     if (isDirty && isDuplicate && isDuplicate(formData)) {
       
